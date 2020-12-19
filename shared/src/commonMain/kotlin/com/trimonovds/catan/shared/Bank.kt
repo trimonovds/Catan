@@ -1,19 +1,9 @@
 package com.trimonovds.catan.shared
 
-class Bank {
-    private val mutableResources = initialBankResources().toMutableList()
-    private val mutableDevelopmentCards = initialBankDevelopmentCards().toMutableList()
-
-    val resources: List<Resource>
-        get() {
-            return mutableResources
-        }
-
-    val developmentCards: List<DevelopmentCard>
-        get() {
-            return mutableDevelopmentCards
-        }
-}
+data class Bank(
+    val resources: List<Resource> = initialBankResources(),
+    val developmentCards: List<DevelopmentCard> = initialBankDevelopmentCards()
+)
 
 private fun initialBankResources(): List<Resource> {
     val result = mutableListOf<Resource>()

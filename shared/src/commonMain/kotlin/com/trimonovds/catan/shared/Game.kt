@@ -6,10 +6,24 @@ class Game(private val numOfPlayers: Int) {
     }
 
     private val bank = Bank()
-    private val players = createPlayers(numOfPlayers)
+    private val players = createInitialPlayers(numOfPlayers)
     private var currentPlayerIndex: Int = 0
 }
 
-private fun createPlayers(numOfPlayers: Int): List<Player> {
+private fun createInitialPlayers(numOfPlayers: Int): List<Player> {
     return (0 until numOfPlayers).map { Player() }
+}
+
+fun initialPlayerPool(): List<Building> {
+    val result = mutableListOf<Building>()
+    for (i in 0 until 5) {
+        result.add(Building.Settlement)
+    }
+    for (i in 0 until 4) {
+        result.add(Building.City)
+    }
+    for (i in 0 until 15) {
+        result.add(Building.Road)
+    }
+    return result
 }

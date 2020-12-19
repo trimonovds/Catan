@@ -1,34 +1,48 @@
 package com.trimonovds.catan.shared
 
-class Player {
-    private val _mutableResources = mutableListOf<Resource>()
-    private val _developmentCards = mutableListOf<DevelopmentCard>()
-    private val _builtBuildings = mutableListOf<Building>()
-    private val _pool = initialPlayerPool().toMutableList()
+data class Player(
+    val builtBuildings: List<Building> = emptyList(),
+    val resources: List<Resource> = emptyList(),
+    val developmentCards: List<DevelopmentCard> = emptyList(),
+    val pool: List<Building> = initialPlayerPool()
+)
 
-    val resources: List<Resource>
-        get() = _mutableResources
-
-    val developmentCards: List<DevelopmentCard>
-        get() = _developmentCards
-
-    val builtBuildings: List<Building>
-        get() = _builtBuildings
-
-    val pool: List<Building>
-        get() = _pool
+fun Player.canPerform(action: Action): Boolean {
+   return when(action) {
+       is Action.Buy -> this.canBuy(action.developmentCard)
+       is Action.Build -> this.canBuild(action.building)
+   }
 }
 
-private fun initialPlayerPool(): List<Building> {
-    val result = mutableListOf<Building>()
-    for (i in 0 until 5) {
-        result.add(Building.Settlement)
+fun Player.perform(action: Action): Player {
+    return when(action) {
+        is Action.Buy -> this.buy(action.developmentCard)
+        is Action.Build -> this.build(action.building)
     }
-    for (i in 0 until 4) {
-        result.add(Building.City)
+}
+
+fun Player.receive(resources: List<Resource>): Player {
+    return this.copy(resources = this.resources + resources)
+}
+
+private fun Player.canBuild(building: Building): Boolean {
+    return this.resources.containsAll(building.price())
+}
+
+private fun Player.build(building: Building): Player {
+    if (!this.canBuild(building)) {
+        throw IllegalArgumentException("Player can't build $building because it has not enough resources")
     }
-    for (i in 0 until 15) {
-        result.add(Building.Road)
+    return this.copy(builtBuildings = builtBuildings + building, resources = resources - building.price())
+}
+
+private fun Player.canBuy(developmentCard: DevelopmentCard): Boolean {
+    return this.resources.containsAll(developmentCard.price())
+}
+
+private fun Player.buy(developmentCard: DevelopmentCard): Player {
+    if (!this.canBuy(developmentCard)) {
+        throw IllegalArgumentException("Player can't buy $developmentCard because it has not enough resources")
     }
-    return result
+    return this.copy(developmentCards = developmentCards + developmentCard, resources = resources - developmentCard.price())
 }

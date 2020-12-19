@@ -8,41 +8,40 @@ data class Player(
 )
 
 fun Player.canPerform(action: Action): Boolean {
-   return when(action) {
-       is Action.Buy -> this.canBuy(action.developmentCard)
-       is Action.Build -> this.canBuild(action.building)
-   }
+    return when (action) {
+        is Action.Buy -> this.resources.containsAll(action.developmentCard.price())
+        is Action.Build -> this.resources.containsAll(action.building.price())
+        is Action.Receive -> true
+    }
 }
 
 fun Player.perform(action: Action): Player {
-    return when(action) {
-        is Action.Buy -> this.buy(action.developmentCard)
-        is Action.Build -> this.build(action.building)
+    if (!this.canPerform(action)) {
+        throw IllegalArgumentException("Player can't perform $action because it has not enough resources")
+    }
+    return when (action) {
+        is Action.Buy -> this.copy(
+            developmentCards = developmentCards + action.developmentCard,
+            resources = resources - action.developmentCard.price()
+        )
+        is Action.Build -> this.copy(
+            builtBuildings = builtBuildings + action.building,
+            resources = resources - action.building.price()
+        )
+        is Action.Receive -> this.copy(resources = resources + action.resources)
     }
 }
 
-fun Player.receive(resources: List<Resource>): Player {
-    return this.copy(resources = this.resources + resources)
-}
-
-private fun Player.canBuild(building: Building): Boolean {
-    return this.resources.containsAll(building.price())
-}
-
-private fun Player.build(building: Building): Player {
-    if (!this.canBuild(building)) {
-        throw IllegalArgumentException("Player can't build $building because it has not enough resources")
+fun initialPlayerPool(): List<Building> {
+    val result = mutableListOf<Building>()
+    for (i in 0 until 5) {
+        result.add(Building.Settlement)
     }
-    return this.copy(builtBuildings = builtBuildings + building, resources = resources - building.price())
-}
-
-private fun Player.canBuy(developmentCard: DevelopmentCard): Boolean {
-    return this.resources.containsAll(developmentCard.price())
-}
-
-private fun Player.buy(developmentCard: DevelopmentCard): Player {
-    if (!this.canBuy(developmentCard)) {
-        throw IllegalArgumentException("Player can't buy $developmentCard because it has not enough resources")
+    for (i in 0 until 4) {
+        result.add(Building.City)
     }
-    return this.copy(developmentCards = developmentCards + developmentCard, resources = resources - developmentCard.price())
+    for (i in 0 until 15) {
+        result.add(Building.Road)
+    }
+    return result
 }

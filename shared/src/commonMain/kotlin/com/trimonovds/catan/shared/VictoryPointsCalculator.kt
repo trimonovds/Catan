@@ -1,7 +1,11 @@
 package com.trimonovds.catan.shared
 
 object VictoryPointsCalculator {
-    fun victoryPoints(buildings: List<Building>, devCards: List<DevelopmentCard>, specialCards: List<SpecialCard>): Int {
+    fun victoryPoints(
+        buildings: List<Building>,
+        devCards: List<DevelopmentCard>,
+        specialCards: List<SpecialCard>
+    ): Int {
         val buildingVictoryPoints = buildings.map { it.victoryPoints() }
         val devCardVictoryPoints = devCards.map { it.victoryPoints() }
         val specialCardVictoryPoints = specialCards.map { it.victoryPoints() }

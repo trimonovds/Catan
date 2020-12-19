@@ -15,42 +15,54 @@ class PlayerTest {
     @Test
     fun whenPlayerIsCreatedItHas0VictoryPoints() {
         val sut = Player()
-        val victoryPoints = VictoryPointsCalculator.victoryPoints(sut.builtBuildings, sut.developmentCards, specialCards = emptyList())
+        val victoryPoints = VictoryPointsCalculator.victoryPoints(
+            sut.builtBuildings,
+            sut.developmentCards,
+            specialCards = emptyList()
+        )
         assertTrue(victoryPoints == 0)
     }
 
     @Test
     fun whenPlayerHasLongestRoadItHas2VictoryPoints() {
         val sut = Player()
-        val victoryPoints = VictoryPointsCalculator.victoryPoints(sut.builtBuildings, sut.developmentCards, specialCards = listOf(SpecialCard.LongestRoad))
+        val victoryPoints = VictoryPointsCalculator.victoryPoints(
+            sut.builtBuildings,
+            sut.developmentCards,
+            specialCards = listOf(SpecialCard.LongestRoad)
+        )
         assertTrue(victoryPoints == 2)
     }
 
     @Test
     fun whenPlayerHasLongestRoadAnd2CitiesItHas6VictoryPoints() {
         val sut = Player(builtBuildings = listOf(Building.City, Building.City))
-        val victoryPoints = VictoryPointsCalculator.victoryPoints(sut.builtBuildings, sut.developmentCards, specialCards = listOf(SpecialCard.LongestRoad))
+        val victoryPoints = VictoryPointsCalculator.victoryPoints(
+            sut.builtBuildings,
+            sut.developmentCards,
+            specialCards = listOf(SpecialCard.LongestRoad)
+        )
         assertTrue(victoryPoints == 6)
     }
 
     @Test
     fun whenPlayerReceiceResourcesForRoadItCanBuildRoad() {
         var sut = Player()
-        sut = sut.receive(listOf(Resource.Brick, Resource.Lumber))
+        sut = sut.perform(Action.Receive(listOf(Resource.Brick, Resource.Lumber)))
         assertTrue(sut.canPerform(Action.Build(Building.Road)))
     }
 
     @Test
     fun whenPlayerReceiceResourcesForDevCardItCanBuyDevCard() {
         var sut = Player()
-        sut = sut.receive(listOf(Resource.Ore, Resource.Grain, Resource.Wool))
+        sut = sut.perform(Action.Receive(listOf(Resource.Ore, Resource.Grain, Resource.Wool)))
         assertTrue(sut.canPerform(Action.Buy(DevelopmentCard.Knight)))
     }
 
     @Test
     fun whenPlayerBuysRoadItReceiveRoadAndLoseResources() {
         var sut = Player()
-        sut = sut.receive(listOf(Resource.Brick, Resource.Lumber))
+        sut = sut.perform(Action.Receive(listOf(Resource.Brick, Resource.Lumber)))
         sut = sut.perform(Action.Build(Building.Road))
         assertTrue(sut.builtBuildings.contains(Building.Road))
         assertTrue(sut.resources.isEmpty())

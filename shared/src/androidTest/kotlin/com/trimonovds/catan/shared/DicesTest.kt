@@ -1,7 +1,7 @@
 package com.trimonovds.catan.shared
 
-import kotlin.test.Test
-import kotlin.test.assertTrue
+import org.junit.Assert.assertTrue
+import org.junit.Test
 
 class DicesTest {
     @Test

@@ -1,10 +1,19 @@
 package com.trimonovds.catan.shared
 
+enum class PlayerColor {
+    Red,
+    Green,
+    White,
+    Blue,
+    None
+}
+
 data class Player(
+    val color: PlayerColor = PlayerColor.None,
     val builtBuildings: List<Building> = emptyList(),
     val resources: List<Resource> = emptyList(),
     val developmentCards: List<DevelopmentCard> = emptyList(),
-    val pool: List<Building> = initialPlayerPool()
+    val pool: List<Building> = emptyList()
 )
 
 fun Player.canPerform(action: Action): Boolean {
@@ -17,7 +26,7 @@ fun Player.canPerform(action: Action): Boolean {
 
 fun Player.perform(action: Action): Player {
     if (!this.canPerform(action)) {
-        throw IllegalArgumentException("Player can't perform $action because it has not enough resources")
+        throw IllegalArgumentException("Player can't perform $action")
     }
     return when (action) {
         is Action.Buy -> this.copy(
@@ -30,18 +39,4 @@ fun Player.perform(action: Action): Player {
         )
         is Action.Receive -> this.copy(resources = resources + action.resources)
     }
-}
-
-fun initialPlayerPool(): List<Building> {
-    val result = mutableListOf<Building>()
-    for (i in 0 until 5) {
-        result.add(Building.Settlement)
-    }
-    for (i in 0 until 4) {
-        result.add(Building.City)
-    }
-    for (i in 0 until 15) {
-        result.add(Building.Road)
-    }
-    return result
 }
